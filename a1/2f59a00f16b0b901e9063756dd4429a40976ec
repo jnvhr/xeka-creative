@@ -1,0 +1,23 @@
+package-lock.json
+  s_b8893b2e0e336d::t_bd8f31dd01e0fa 2,8
+package.json
+  s_b8893b2e0e336d::t_40fa3ca6186d50 2
+public/manifest.json
+  s_b8893b2e0e336d::t_55201d58a693e7 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a12f59a00f16b0b901e9063756dd4429a40976ec",
+  "prompts": {},
+  "sessions": {
+    "s_b8893b2e0e336d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70f99f4d-b6f1-4217-ad7b-33b4cd27136b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Janvher Lucas Sarmiento <jnvhr@MacBook-Air.local>"
+    }
+  }
+}
