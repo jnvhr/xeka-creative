@@ -1,347 +1,278 @@
-import React, { useState, useEffect } from 'react';
-import {Mail, Instagram, Youtube, ArrowRight, Sparkles, Facebook, ArrowUpRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { Facebook, Instagram, Moon, Play, Sun, Youtube } from 'lucide-react';
+import { contact, contactOlds, heroOlds, heroPosters, latest, projects, stats, techniques, toolkit, wall } from './data';
+import { Depth, Lean, Paste, Plane, PointerProvider, Travel, useWide } from './motion';
+import Player from './Player';
 
-export default function VideoEditorPortfolio() {
-  // const [hoveredProject, setHoveredProject] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+const socialIcons = { Instagram, YouTube: Youtube, Facebook };
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+// One edit as a poster: paper margin, tape, caption on the margin. The image drifts inside its frame.
+function Poster({ index, tilt, meta = false, eager = false, onPlay }) {
+  const project = projects[index];
+  return (
+    <button
+      type="button"
+      className={`p ${project.shape}`}
+      style={{ '--rot': `${tilt}deg` }}
+      onClick={() => onPlay(index)}
+      aria-label={`Play ${project.title}`}
+    >
+      <span className="win">
+        <Travel
+          as="img"
+          y={['-6%', '6%']}
+          live={{ scale: 1.16 }}
+          src={project.img}
+          alt=""
+          loading={eager ? 'eager' : 'lazy'}
+          onError={(e) => e.currentTarget.classList.add('gone')}
+        />
+      </span>
+      <span className="cap">
+        {project.short}
+        <span><Play size={13} fill="currentColor" strokeWidth={0} aria-hidden="true" />{project.year}</span>
+      </span>
+      {meta && <span className="meta">{project.category}, {project.software}<br />{project.description}</span>}
+    </button>
+  );
+}
 
-  const projects = [
-    {
-      id: 1,
-      title: "Mahito (Shoko Remake)",
-      category: "Music Sync Edit",
-      year: "2025",
-      software: "After Effects",
-      thumbnail: "https://img.youtube.com/vi/M_tSvfBcIBU/hqdefault.jpg",
-      link: "https://www.youtube.com/shorts/M_tSvfBcIBU",
-      description: "Transitions, masking, VFX with CRT effects synced to music"
-    },
-    {
-      id: 2,
-      title: "Animation Practice (Shoko Remake)",
-      category: "2D Animation",
-      year: "2025",
-      software: "After Effects | Photopea",
-      thumbnail: "https://img.youtube.com/vi/wbIOHrKOjIY/maxresdefault.jpg",
-      link: "https://www.youtube.com/shorts/wbIOHrKOjIY",
-      description: "Manga character animation using puppet tool and layering"
-    },
-    {
-      id: 3,
-      title: "Grimes",
-      category: "Motion Tracking",
-      year: "2026",
-      software: "After Effects",
-      thumbnail: "https://img.youtube.com/vi/1GWAjpbPnUU/maxresdefault.jpg",
-      link: "https://www.youtube.com/shorts/1GWAjpbPnUU",
-      description: "Mask tracking and rotoscoping for perspective shift"
-    },
-    {
-      id: 4,
-      title: "POV: When a Cat is Hungry",
-      category: "Stylized Edit",
-      year: "2026",
-      software: "After Effects",
-      thumbnail: "https://img.youtube.com/vi/pveHhpRJWvc/hqdefault.jpg",
-      link: "https://www.youtube.com/shorts/pveHhpRJWvc",
-      description: "Backrooms inspired aesthetic with creative color correction"
-    },
-    {
-      id: 5,
-      title: "Car Edit",
-      category: "3D Tracking",
-      year: "2025",
-      software: "After Effects",
-      thumbnail: "https://i.imgur.com/UZahD9j.jpeg",
-      link: "https://www.instagram.com/p/DSyPwAFE1uQ/",
-      description: "3D camera text tracking with speedramp and rotoscoping"
-    },
-    {
-      id: 6,
-      title: "Freeze Frame",
-      category: "Creative Edit",
-      year: "2025",
-      software: "After Effects",
-      thumbnail: "https://i.imgur.com/ZBmcgFN.jpeg",
-      link: "https://www.instagram.com/p/DS6PxV7CRH0/",
-      description: "Time manipulation with morph transitions synced to beat"
-    },
-    {
-      id: 7,
-      title: "Wuthering Waves – Saving Pulls",
-      category: "Gaming Content",
-      year: "2025",
-      software: "DaVinci Resolve Studio",
-      thumbnail: "https://img.youtube.com/vi/mjafBBZ97sw/maxresdefault.jpg",
-      link: "https://www.youtube.com/watch?v=mjafBBZ97sw",
-      description: "Gameplay with background music and seamless transitions"
-    },
-    {
-      id: 8,
-      title: "INTRO",
-      category: "Gaming Content",
-      year: "2025",
-      software: "DaVinci Resolve Studio",
-      thumbnail: "https://img.youtube.com/vi/-QKYhcdNLCY/hqdefault.jpg",
-      link: "https://www.youtube.com/watch?v=-QKYhcdNLCY",
-      description: "Gameplay Introduction",
-      scale: "scale-105"
-    },
-    {
-      id: 9,
-      title: "Fashion",
-      category: "Creative Edit",
-      year: "2026",
-      software: "After Effects",
-      thumbnail: "https://img.youtube.com/vi/2iBaMAr69Y4/maxresdefault.jpg",
-      link: "https://www.youtube.com/shorts/2iBaMAr69Y4",
-      description: "Jenna Ortega - Rouge Dior",
-      scale: "scale-105"
-    }
-  ];
+function Nav({ theme, onToggleTheme }) {
+  return (
+    <header className="top">
+      <a className="mark" href="#top">xeka.</a>
+      <nav className="tags" aria-label="Sections">
+        <a className="tag" href="#work">Work</a>
+        <a className="tag" href="#kit">Toolkit</a>
+        <a className="tag k" href="#contact">Get in touch</a>
+        <button
+          type="button"
+          className="tag icon"
+          onClick={onToggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to the day wall' : 'Switch to the night wall'}
+        >
+          {theme === 'dark' ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
+        </button>
+      </nav>
+    </header>
+  );
+}
+
+// The hero has planes. As it scrolls away, far things (old posters, the lettering) lag behind
+// and the taped posters run ahead and twist. The pointer shifts each plane by its depth.
+function Hero({ onPlay }) {
+  const ref = useRef(null);
+  const wide = useWide();
+  const reduce = useReducedMotion();
+  const on = wide && !reduce;
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 opacity-40 pointer-events-none">
-        <div 
-          className="absolute w-[800px] h-[800px] bg-purple-600/30 rounded-full blur-[120px]"
-          style={{
-            left: `${mousePosition.x - 400}px`,
-            top: `${mousePosition.y - 400}px`,
-          }}
-        ></div>
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-pink-600/20 rounded-full blur-[120px]"></div>
+    <section className="hero" id="top" ref={ref}>
+      <div className="back">
+        <div aria-hidden="true">
+          {heroOlds.map(([index, left, top, width, tilt]) => (
+            <div className="old" key={index} style={{ left: `${left}vw`, top: `${top}vw`, width: `${width}vw`, rotate: `${tilt}deg` }}>
+              <Plane progress={scrollYProgress} to={32} on={on}>
+                <Depth depth={3}><img src={projects[index].img} alt="" /></Depth>
+              </Plane>
+            </div>
+          ))}
+        </div>
+        <h1>
+          <Plane className="xeka" progress={scrollYProgress} to={42} on={on}><Depth depth={6}>XEKA</Depth></Plane>
+          <Plane className="creative" progress={scrollYProgress} to={22} on={on}><Depth depth={12}>Creative</Depth></Plane>
+        </h1>
       </div>
 
-      {/* Glass Navigation */}
-      <nav className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 px-4 md:px-8 py-3 md:py-4 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl max-w-[95vw]">
-        <div className="flex items-center gap-3 md:gap-8">
-          <div className="text-[8px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] font-light whitespace-nowrap">VIDEO EDITOR</div>
-          <div className="flex gap-3 md:gap-6 text-[9px] md:text-xs tracking-wider font-light">
-            <button onClick={() => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' })} className="hover:text-purple-400 transition-colors whitespace-nowrap">Projects</button>
-            <button onClick={() => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth' })} className="hover:text-purple-400 transition-colors whitespace-nowrap">Feedback</button>
-            <button onClick={() => document.getElementById('stats').scrollIntoView({ behavior: 'smooth' })} className="hover:text-purple-400 transition-colors whitespace-nowrap">About</button>
-            <button onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })} className="hover:text-purple-400 transition-colors whitespace-nowrap">Contact</button>
+      <div className="hposters">
+        {heroPosters.map(([index, left, top, width, tilt, to, depth, twist]) => (
+          <div className="hp" key={index} style={{ left: `${left}vw`, top: `${top}vw`, width: `${width}vw` }}>
+            <Plane progress={scrollYProgress} to={to} twist={twist} on={on}>
+              <Depth depth={depth}><Poster index={index} tilt={tilt} eager onPlay={onPlay} /></Depth>
+            </Plane>
           </div>
-        </div>
-      </nav>
+        ))}
+      </div>
 
-      {/* Hero Section */}
-      <header className="h-screen flex items-center justify-center relative px-4 md:px-8">
-        <div className="relative z-10 max-w-6xl text-center">
-          <div className="inline-flex items-center gap-2 mb-6 md:mb-8 px-3 md:px-4 py-2 rounded-full backdrop-blur-xl bg-white/5 border border-white/10">
-            <Sparkles className="w-3 md:w-4 h-3 md:h-4 text-purple-400" />
-            <span className="text-[10px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] text-gray-400 uppercase">Open for Commissions</span>
-          </div>
-          
-          <h1 className="text-6xl sm:text-7xl md:text-9xl font-extralight mb-4 md:mb-6 leading-[1.1] tracking-tighter overflow-visible">
-            <span className="block text-white mb-2">Xeka</span>
-            {/* GRADIENT UPDATED: via-45% and to-80% pulls the blue further in to match the contact section */}
-            <span className="bg-gradient-to-r from-purple-500 from-0% via-pink-400 via-45% to-blue-400 to-80% bg-clip-text text-transparent inline-block px-8 pb-10 pt-2 -mt-2">
-              Creative
-            </span>
-          </h1>
-          
-          <p className="text-base sm:text-xl md:text-2xl font-light text-gray-400 max-w-2xl mx-auto mb-8 md:mb-12 px-4 leading-relaxed">
-            Crafting <span className="text-white">standout content</span> through <span className="text-white">creative vision</span> and <span className="text-white">seamless execution</span>
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
-            <button 
-              onClick={() => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' })}
-              className="group w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white hover:text-black hover:scale-105 hover:shadow-2xl hover:shadow-white/30 transition-all duration-300"
-            >
-              <span className="flex items-center justify-center gap-2 md:gap-3 text-xs md:text-sm tracking-wider font-light">
-                See Projects
-                <ArrowRight className="w-3 h-3 md:w-4 md:h-4 group-hover:scale-110 group-hover:translate-x-1 transition-all duration-300" />
-              </span>
-            </button>
-            <button 
-              onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
-              className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-white/10 hover:scale-105 transition-all duration-300"
-            >
-              <span className="text-xs md:text-sm tracking-wider font-light">Get in Touch</span>
-            </button>
-          </div>
+      <Plane className="offer" progress={scrollYProgress} to={8} on={on}>
+        <p>Video editor. <b>Open for commissions.</b><br />Short-form edits, YouTube videos, motion and 2D animation.</p>
+        <div className="btns">
+          <a className="btn" href="#contact">Get in touch</a>
+          <button type="button" className="btn hollow" onClick={() => onPlay(latest)}>
+            <Play size={14} fill="currentColor" strokeWidth={0} aria-hidden="true" />Play latest edit
+          </button>
         </div>
-      </header>
+      </Plane>
+    </section>
+  );
+}
 
-      {/* Stats Section */}
-      <section id="stats" className="py-16 md:py-32 px-4 md:px-8 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-            {[
-              { number: `${projects.length}+`, label: "Projects Created" },
-              { number: "5.4K+", label: "Total Video Views" },
-              { number: "2+", label: "Years Experience" }
-            ].map((stat, i) => (
-              <div key={i} className="group p-6 md:p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-400/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
-                <div className="text-5xl md:text-6xl font-extralight mb-3 bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">{stat.number}</div>
-                <div className="text-xs md:text-sm tracking-widest text-gray-400 group-hover:text-purple-400 transition-colors duration-300">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+// Three columns of posters that travel at different speeds. From 721px up the heading is painted on
+// the wall: it holds its place and fades back while the posters pass in front of it.
+function Work({ onPlay }) {
+  const ref = useRef(null);
+  const wide = useWide();
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const recede = useTransform(scrollYProgress, [0, 0.09], [1, 0.2]);
+  const columnTravel = [[80, -80], [-70, 70], [160, -160]];
 
-      {/* Featured Projects */}
-      <section id="projects" className="py-16 md:py-32 px-4 md:px-8 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12 md:mb-20 text-center">
-            <div className="text-xs tracking-[0.3em] text-gray-400 mb-4 uppercase">Portfolio</div>
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-extralight">Projects</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {projects.map((project) => (
-              <a
-                key={project.id}
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 cursor-pointer"
+  return (
+    <section className="work" id="work" ref={ref}>
+      <motion.div className="wh" style={wide && !reduce ? { opacity: recede } : undefined}>
+        <h2>The work</h2>
+        <p>Nine edits, pasted up at full size. Pick a poster and it plays right here.</p>
+      </motion.div>
+      <div className="cols">
+        {wall.map((column, n) => (
+          <Travel className="col" key={n} y={columnTravel[n]} when={wide}>
+            {column.map(([index, tilt], k) => (
+              <Travel
+                className={`slot${projects[index].shape === 'wide' ? ' w' : ''}`}
+                key={index}
+                rotate={k % 2 ? [2.2, -2.2] : [-1.8, 1.8]}
+                when={wide}
               >
-                <div className="aspect-video overflow-hidden">
-                  <img src={project.thumbnail} alt={project.title} className={`w-full h-full object-cover group-hover:scale-110 transition-all duration-700 ${project.scale || ''}`} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60"></div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* <div className="w-12 h-12 md:w-16 md:h-16 rounded-full backdrop-blur-xl bg-white/10 border border-white/20 flex items-center justify-center scale-0 opacity-0 group-hover:scale-110 group-hover:opacity-100 transition-all duration-500">
-                    <Play className="w-5 h-5 md:w-6 md:h-6 rotate-90 group-hover:rotate-0 transition-transform duration-500" fill="white" />
-                  </div> */}
-                </div>
-                {/* Project Info Overlay */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
-  
-                {/* The Arrow Icon (Bottom Right) */}
-                <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 text-white/50 group-hover:text-purple-400 transition-colors duration-300">
-                  <ArrowUpRight size={24} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                </div>
+                <Poster index={index} tilt={tilt} meta onPlay={onPlay} />
+              </Travel>
+            ))}
+          </Travel>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-                <div className="text-[10px] uppercase tracking-widest text-purple-400 mb-1">
-                  {project.category}
-                </div>
-                
-                <h3 className="text-lg font-light mb-1 pr-8 leading-tight">
-                  {project.title}
-                </h3>
-                
-                <p className="text-[10px] text-gray-400 mb-2 line-clamp-2 max-w-[85%]">
-                  {project.description}
-                </p>
-                
-                <div className="flex flex-col gap-0.5">
-                  <div className="text-[10px] text-gray-500">{project.year}</div>
-                  <div className="text-[9px] tracking-widest text-purple-400/80 uppercase">
-                    Software: {project.software}
-                  </div>
-                </div>
-              </div>
-              </a>
+// One strip of tape with the techniques on it, pulled sideways by the scroll.
+function Band() {
+  const words = Array.from({ length: 5 }, () => techniques).flat();
+  return (
+    <div className="band" aria-hidden="true">
+      <Travel x={['8vw', '-56vw']}>
+        {words.map((word, n) => <span key={n}>{word}</span>)}
+      </Travel>
+    </div>
+  );
+}
+
+// A printed bill pasted on the wall. Billing order is the skill level.
+function Toolkit() {
+  const lineTravel = [[-14, 14], [22, -22], [-28, 28], [32, -32]];
+  return (
+    <section className="kit" id="kit">
+      <Paste className="sheet">
+        <Lean className="bill" rest={0.7}>
+          <h2>Toolkit</h2>
+          {toolkit.map((group, n) => (
+            <div className={`line l${n + 1}`} key={group.label}>
+              <small>{group.label}</small>
+              <Travel x={lineTravel[n]}>
+                {group.items.map((item, k) => (
+                  <React.Fragment key={item}>{k > 0 && <i>/</i>}{item}</React.Fragment>
+                ))}
+              </Travel>
+            </div>
+          ))}
+        </Lean>
+      </Paste>
+      <p className="facts">
+        {stats.map(([number, label]) => <span key={label}><b>{number}</b> {label}</span>)}
+      </p>
+    </section>
+  );
+}
+
+// A tear-off flyer. Eight tabs to tear, but only the first is a tab stop,
+// so a keyboard or a screen reader meets the address once.
+function Contact() {
+  const mailto = `mailto:${contact.email}`;
+  const flutter = [4, -5, 2.5];
+  return (
+    <section className="contact" id="contact">
+      <Travel className="ghost" x={['-10vw', '10vw']} aria-hidden="true">xeka.</Travel>
+      <div aria-hidden="true">
+        {contactOlds.map(([index, left, top, width, tilt]) => (
+          <Travel
+            className="old"
+            key={index}
+            y={[22, -22]}
+            base={{ left: `${left}%`, top: `${top}%`, width: `${width}vw`, rotate: tilt }}
+          >
+            <img src={projects[index].img} alt="" loading="lazy" />
+          </Travel>
+        ))}
+      </div>
+      <Travel className="flyer-w" y={[60, -60]}>
+        <Paste className="flyer sheet" tilt={[-6, -1.6]}>
+          <div className="flyer-b">
+            <h2>Have a project <em>in mind?</em></h2>
+            <p>I'm always excited to collaborate on new creative projects. Write to me, or tear off a tab.</p>
+            <a className="mail" href={mailto}>{contact.email}</a>
+            <div className="soc">
+              {contact.social.map(({ name, href }) => {
+                const Icon = socialIcons[name];
+                return (
+                  <a key={name} href={href} target="_blank" rel="noopener noreferrer">
+                    <Icon size={18} aria-hidden="true" />{name}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+          <div className="tabs">
+            {Array.from({ length: 8 }, (_, n) => (
+              <Travel
+                as="a"
+                key={n}
+                href={mailto}
+                rotate={[-flutter[n % 3], flutter[n % 3]]}
+                base={{ transformOrigin: '50% 0%' }}
+                whileHover={{ y: 10 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                tabIndex={n === 0 ? undefined : -1}
+                aria-hidden={n === 0 ? undefined : true}
+                aria-label={n === 0 ? 'Email Xeka' : undefined}
+              >
+                <span>{contact.email}</span>
+              </Travel>
             ))}
           </div>
-        </div>
-      </section>
+        </Paste>
+      </Travel>
+      <footer><span>© 2026 Xeka Creative</span><span>Video editor</span></footer>
+    </section>
+  );
+}
 
-      {/* Testimonials */}
-      <section id="feedback" className="py-16 md:py-32 px-4 md:px-8 relative z-10">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="text-xs tracking-[0.3em] text-gray-400 mb-4 uppercase">Client Feedback</div>
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-extralight mb-12 md:mb-20">Testimonials</h2>
-          <div className="p-12 md:p-20 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 max-w-8xl mx-auto">
-            <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-purple-400 mx-auto mb-6 opacity-50" />
-            <h3 className="text-2xl md:text-3xl font-light mb-4 text-gray-300">Coming Soon</h3>
-            <p className="text-base md:text-lg text-gray-400 font-light">Currently building my client portfolio. Check back soon for testimonials.</p>
-          </div>
-        </div>
-      </section>
+// The crimson day wall is the default look. The choice of night wall is remembered on this device.
+function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    try { return window.localStorage.getItem('xeka-theme') === 'dark' ? 'dark' : 'light'; } catch (e) { return 'light'; }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { window.localStorage.setItem('xeka-theme', theme); } catch (e) { /* private mode: the choice just lasts for this visit */ }
+  }, [theme]);
+  return [theme, () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))];
+}
 
-      {/* Toolkit */}
-      <section className="py-16 md:py-32 px-4 md:px-8 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="p-8 md:p-12 lg:p-16 rounded-3xl backdrop-blur-2xl bg-white/10 border border-white/20 shadow-2xl">
-            <div className="mb-12 md:mb-16 text-center">
-              <div className="text-xs tracking-[0.3em] text-gray-400 mb-4 uppercase">Expertise</div>
-              <h2 className="text-3xl md:text-4xl lg:text-6xl font-extralight">Creative Toolkit</h2>
-            </div>
-            <div className="space-y-3 md:space-y-4">
-              {[
-                { name: "Adobe After Effects", level: "Advanced" },
-                { name: "DaVinci Resolve Studio", level: "Intermediate" },
-                { name: "Adobe Premiere Pro", level: "Intermediate" },
-                { name: "Adobe Photoshop", level: "Intermediate" },
-                { name: "Color Grading", level: "Beginner" },
-                { name: "Motion Graphics", level: "Beginner" },
-                { name: "TouchDesigner", level: "Offering soon..." },
-                { name: "Live2d Cubism", level: "Offering soon..." },
-                { name: "Sound Design", level: "Offering soon..." },
-                { name: "VFX Compositing", level: "Offering soon..." }
-              ].map((skill, i) => (
-                <div key={i} className="group flex justify-between items-center py-4 md:py-6 px-4 md:px-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:translate-x-2 transition-all duration-300">
-                  <span className="text-base md:text-xl font-light group-hover:text-purple-400 transition-colors duration-300">{skill.name}</span>
-                  <span className="text-[10px] md:text-xs tracking-wider text-gray-400 px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-xl bg-black/20 border border-white/20">{skill.level}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+export default function App() {
+  const [playing, setPlaying] = useState(null);
+  const [theme, toggleTheme] = useTheme();
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 md:py-40 px-4 md:px-8 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="p-8 md:p-16 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 text-center">
-            <div className="text-xs tracking-[0.3em] text-gray-400 mb-6 md:mb-8 uppercase">Let's Collaborate</div>
-            
-            <h2 className="text-3xl sm:text-5xl md:text-7xl font-extralight mb-6 leading-tight overflow-visible">
-              Have a project<br/>
-              {/* CONTACT GRADIENT: matches the new logic */}
-              <span className="bg-gradient-to-r from-purple-500 from-0% via-pink-400 via-45% to-blue-400 to-80% bg-clip-text text-transparent inline-block px-8 pb-6 pt-2">
-                in mind?
-              </span>
-            </h2>
-            
-            <p className="text-base md:text-lg text-gray-400 mb-8 md:mb-12 max-w-xl mx-auto font-light">
-              I'm always excited to collaborate on new creative projects
-            </p>
-            
-            <a href="mailto:janvhersarmiento@gmail.com" className="inline-block text-lg md:text-2xl font-light mb-8 md:mb-12 hover:text-purple-400 transition-colors break-all">
-              janvhersarmiento@gmail.com
-            </a>
-            
-            <div className="flex justify-center gap-3 md:gap-4 mt-6 md:mt-8">
-              {[
-                { icon: Instagram, href: "https://www.instagram.com/xeka.ae/" },
-                { icon: Youtube, href: "https://www.youtube.com/@xx3kae" },
-                { icon: Facebook, href: "https://www.facebook.com/janvherlucas.sarmiento" },
-                { icon: Mail, href: "mailto:janvhersarmiento@gmail.com" }
-              ].map((social, i) => (
-                <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="w-11 h-11 md:w-12 md:h-12 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black hover:scale-110 hover:-translate-y-1 transition-all duration-300">
-                  <social.icon className="w-4 h-4 md:w-5 md:h-5" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 backdrop-blur-xl bg-white/5 py-6 md:py-8 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs md:text-sm text-gray-500 font-light">
-          <div>© 2026 All Rights Reserved</div>
-          <div className="tracking-widest uppercase">Video Editor</div>
-        </div>
-      </footer>
-    </div>
+  return (
+    <PointerProvider>
+      <Nav theme={theme} onToggleTheme={toggleTheme} />
+      <main>
+        <Hero onPlay={setPlaying} />
+        <Work onPlay={setPlaying} />
+        <Band />
+        <Toolkit />
+        <Contact />
+      </main>
+      <Player index={playing} onClose={() => setPlaying(null)} />
+    </PointerProvider>
   );
 }

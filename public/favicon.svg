@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Xeka Creative</title>
+  <rect width="64" height="64" fill="#C4302B"/>
+  <g fill="#FBF7F9">
+    <polygon points="8,16 20,16 44,48 32,48"/>
+    <polygon points="32,16 44,16 20,48 8,48"/>
+    <rect x="47" y="38" width="10" height="10"/>
+  </g>
+</svg>
