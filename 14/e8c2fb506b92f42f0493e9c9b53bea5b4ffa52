@@ -1,0 +1,47 @@
+public/favicon.svg
+  s_b8893b2e0e336d::t_6c72f6d2935ccb 1-9
+src/motion.js
+  s_b8893b2e0e336d::t_6013eda170ca7f 1-101
+src/index.css
+  s_b8893b2e0e336d::t_82775289f285ba 3-191
+src/index.js
+  s_b8893b2e0e336d::t_c31b248d754791 3
+src/App.test.js
+  s_b8893b2e0e336d::t_c31b248d754791 3,5,7-17
+src/Player.js
+  s_b8893b2e0e336d::t_67294401a9eb6f 1-52
+public/index.html
+  s_b8893b2e0e336d::t_c31b248d754791 8,31-34,36-37
+  s_b8893b2e0e336d::t_22db0b6e52d2cc 5-6,28
+  s_b8893b2e0e336d::t_935bf587233a56 18,26
+  s_b8893b2e0e336d::t_aac9beab9dbf06 19-21
+src/data.js
+  s_b8893b2e0e336d::t_1804a7944b479e 1-64
+src/App.js
+  s_b8893b2e0e336d::t_dd3b186a411a58 1-6,8,10-60,62-69,72-86,89-94,96-97,99-105,107-110,112-120,122-136,138-139,141-146,148-158,160-175,177-185,187-221,224-247,249-276,278
+.gitignore
+  s_b8893b2e0e336d::t_e9623633e45c97 24-29
+package.json
+  s_b8893b2e0e336d::t_593b554fdba356 6,12
+public/manifest.json
+  s_b8893b2e0e336d::t_22db0b6e52d2cc 7,11,16-21,24
+  s_b8893b2e0e336d::t_c31b248d754791 29-30
+package-lock.json
+  s_b8893b2e0e336d::t_9a542e95726bb5 11,17,2454-2462,8264-8290,11394-11434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "14e8c2fb506b92f42f0493e9c9b53bea5b4ffa52",
+  "prompts": {},
+  "sessions": {
+    "s_b8893b2e0e336d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70f99f4d-b6f1-4217-ad7b-33b4cd27136b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Janvher Lucas Sarmiento <jnvhr@MacBook-Air.local>"
+    }
+  }
+}
