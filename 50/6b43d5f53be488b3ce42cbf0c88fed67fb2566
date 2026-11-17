@@ -1,0 +1,19 @@
+public/index.html
+  s_b8893b2e0e336d::t_848987f4f522b9 15,18,26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "506b43d5f53be488b3ce42cbf0c88fed67fb2566",
+  "prompts": {},
+  "sessions": {
+    "s_b8893b2e0e336d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70f99f4d-b6f1-4217-ad7b-33b4cd27136b",
+        "model": "unknown"
+      },
+      "human_author": "Janvher Lucas Sarmiento <jnvhr@MacBook-Air.local>"
+    }
+  }
+}
